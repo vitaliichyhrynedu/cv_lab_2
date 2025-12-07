@@ -48,6 +48,15 @@ def filter_by_area(contours, min_area=800):
     return filtered
 
 
+def enumerate_contours(image, contours):
+    for i, contour in enumerate(contours):
+        M = cv.moments(contour)
+        cX = int(M["m10"] / M["m00"])
+        cY = int(M["m01"] / M["m00"])
+        cv.putText(image, str(i + 1), (cX, cY),
+                   cv.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 255), 2)
+
+
 def main():
     IMAGE_PATH = "KPI_campus.png"
     image = cv.imread(IMAGE_PATH)
@@ -69,6 +78,11 @@ def main():
     with_filtered = image.copy()
     filtered = filter_by_area(contours)
     cv.drawContours(with_filtered, filtered, -1, (0, 255, 0), 2)
+
+    # Enumerate buildings
+    enumerate_contours(with_filtered, filtered)
+
+    # Display detection result
     cv.imshow("Filtered contours", with_filtered)
     print(f"Building count: {len(filtered)}")
     wait_then_destroy()
